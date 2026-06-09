@@ -19,8 +19,14 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import pe.kusicred.app.ui.theme.*
 
+import androidx.hilt.navigation.compose.hiltViewModel
+import pe.kusicred.app.features.auth.ui.screen.AuthViewModel
+
 @Composable
-fun SplashScreen(onTimeout: () -> Unit) {
+fun SplashScreen(
+    onNavigateNext: (Boolean) -> Unit,
+    viewModel: AuthViewModel = hiltViewModel()
+) {
     val scale = remember { Animatable(0.5f) }
     val alpha = remember { Animatable(0f) }
 
@@ -31,7 +37,10 @@ fun SplashScreen(onTimeout: () -> Unit) {
         )
         alpha.animateTo(1f, animationSpec = tween(400))
         delay(1500)
-        onTimeout()
+        viewModel.checkAuthState(
+            onLoggedIn = { onNavigateNext(true) },
+            onNotLoggedIn = { onNavigateNext(false) }
+        )
     }
 
     Box(

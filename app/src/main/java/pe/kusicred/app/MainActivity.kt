@@ -25,6 +25,8 @@ import pe.kusicred.app.features.milestones.ui.screen.MilestoneEvaluationScreen
 import pe.kusicred.app.features.milestones.ui.screen.StimulationGuideScreen
 import pe.kusicred.app.features.onboarding.ui.SplashScreen
 import pe.kusicred.app.features.onboarding.ui.WelcomeScreen
+import pe.kusicred.app.features.auth.ui.screen.LoginScreen
+import pe.kusicred.app.features.auth.ui.screen.SignupScreen
 import pe.kusicred.app.features.premium.ui.screen.PdfExportScreen
 import pe.kusicred.app.features.premium.ui.screen.PremiumPaywallScreen
 import pe.kusicred.app.features.vaccines.ui.screen.IronTrackerScreen
@@ -61,8 +63,9 @@ fun KusiCREDNavGraph() {
         // ---- Onboarding ----
         composable(Screen.Splash.route) {
             SplashScreen(
-                onTimeout = {
-                    navController.navigate(Screen.Welcome.route) {
+                onNavigateNext = { isLoggedIn ->
+                    val destination = if (isLoggedIn) Screen.ChildSelector.route else Screen.Welcome.route
+                    navController.navigate(destination) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
                 }
@@ -72,15 +75,38 @@ fun KusiCREDNavGraph() {
         composable(Screen.Welcome.route) {
             WelcomeScreen(
                 onGetStarted = {
-                    navController.navigate(Screen.ChildSelector.route) {
+                    navController.navigate("login") {
                         popUpTo(Screen.Welcome.route) { inclusive = true }
                     }
                 }
             )
         }
 
+        composable("login") {
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate(Screen.ChildSelector.route) {
+                        popUpTo("login") { inclusive = true }
+                    }
+                },
+                onNavigateToSignup = { navController.navigate("signup") }
+            )
+        }
+
+        composable("signup") {
+            SignupScreen(
+                onSignupSuccess = {
+                    navController.navigate(Screen.ChildSelector.route) {
+                        popUpTo("login") { inclusive = true }
+                    }
+                },
+                onBackToLogin = { navController.popBackStack() }
+            )
+        }
+
         // ---- Admission ----
         composable(Screen.ChildSelector.route) {
+            val authViewModel: pe.kusicred.app.features.auth.ui.screen.AuthViewModel = hiltViewModel()
             ChildSelectorScreen(
                 onChildSelected = { childId ->
                     navController.navigate(Screen.Home.createRoute(childId)) {
@@ -89,6 +115,13 @@ fun KusiCREDNavGraph() {
                 },
                 onAddNewChild = {
                     navController.navigate(Screen.ChildRegistration.route)
+                },
+                onLogout = {
+                    authViewModel.logout {
+                        navController.navigate(Screen.Welcome.route) {
+                            popUpTo(0)
+                        }
+                    }
                 }
             )
         }

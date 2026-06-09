@@ -40,6 +40,7 @@ class ChildSelectorViewModel @Inject constructor(
 fun ChildSelectorScreen(
     onChildSelected: (String) -> Unit,
     onAddNewChild: () -> Unit,
+    onLogout: () -> Unit,
     viewModel: ChildSelectorViewModel = hiltViewModel()
 ) {
     val children by viewModel.children.collectAsState()
@@ -48,6 +49,11 @@ fun ChildSelectorScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Kusi-CRED", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold) },
+                actions = {
+                    IconButton(onClick = onLogout) {
+                        Icon(Icons.Default.ExitToApp, contentDescription = "Cerrar sesión", tint = KusiGreen40)
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
