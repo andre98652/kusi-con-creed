@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "888812438953",
+    "project_id": "kusicred-836f5",
+    "storage_bucket": "kusicred-836f5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888812438953:android:60c454f74a1ba13801b0b8",
+        "android_client_info": {
+          "package_name": "pe.kusicred.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbTpsz3FYvr-VDuQK2QtHRF_GBhZLpQOE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -73,10 +73,18 @@ fun KusiCREDNavGraph() {
         }
 
         composable(Screen.Welcome.route) {
+            val authViewModel: pe.kusicred.app.features.auth.ui.screen.AuthViewModel = hiltViewModel()
             WelcomeScreen(
                 onGetStarted = {
                     navController.navigate("login") {
                         popUpTo(Screen.Welcome.route) { inclusive = true }
+                    }
+                },
+                onGuestLogin = {
+                    authViewModel.loginAsGuest {
+                        navController.navigate(Screen.ChildSelector.route) {
+                            popUpTo(Screen.Welcome.route) { inclusive = true }
+                        }
                     }
                 }
             )

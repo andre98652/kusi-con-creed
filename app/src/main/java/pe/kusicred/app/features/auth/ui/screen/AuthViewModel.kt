@@ -83,6 +83,13 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun loginAsGuest(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            authRepository.loginAsGuest()
+            onSuccess()
+        }
+    }
+
     fun clearError() {
         if (_uiState.value is AuthUiState.Error) {
             _uiState.value = AuthUiState.Idle

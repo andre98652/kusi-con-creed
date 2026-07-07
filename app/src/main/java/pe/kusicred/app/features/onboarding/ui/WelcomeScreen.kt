@@ -32,7 +32,7 @@ data class OnboardingPage(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun WelcomeScreen(onGetStarted: () -> Unit) {
+fun WelcomeScreen(onGetStarted: () -> Unit, onGuestLogin: () -> Unit = {}) {
     val pages = listOf(
         OnboardingPage(
             icon = Icons.Default.MonitorWeight,
@@ -93,25 +93,45 @@ fun WelcomeScreen(onGetStarted: () -> Unit) {
 
         // CTA Button
         Box(modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
-            Button(
-                onClick = {
-                    if (pagerState.currentPage < pages.size - 1) {
-                        scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
-                    } else {
-                        onGetStarted()
+            Column {
+                Button(
+                    onClick = {
+                        if (pagerState.currentPage < pages.size - 1) {
+                            scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
+                        } else {
+                            onGetStarted()
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = KusiGreen40)
+                ) {
+                    Text(
+                        text = if (pagerState.currentPage < pages.size - 1) "Siguiente →" else "Crear Cuenta / Ingresar",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                
+                if (pagerState.currentPage == pages.size - 1) {
+                    Spacer(Modifier.height(12.dp))
+                    OutlinedButton(
+                        onClick = onGuestLogin,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text(
+                            text = "Usar sin internet (Invitado)",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = KusiGreen40
+                        )
                     }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = KusiGreen40)
-            ) {
-                Text(
-                    text = if (pagerState.currentPage < pages.size - 1) "Siguiente →" else "¡Comenzar ahora!",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                }
             }
         }
 
