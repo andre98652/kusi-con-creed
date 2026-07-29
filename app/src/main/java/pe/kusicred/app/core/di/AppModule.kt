@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import pe.kusicred.app.core.database.AppDatabase
 import pe.kusicred.app.core.database.DatabaseSeeder
 import pe.kusicred.app.core.database.dao.*
+import com.google.firebase.auth.FirebaseAuth
 import javax.inject.Singleton
 import javax.inject.Provider
 
@@ -63,4 +64,8 @@ object AppModule {
     @Singleton
     fun provideWorkManager(@ApplicationContext context: Context): WorkManager =
         WorkManager.getInstance(context)
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
 }

@@ -99,6 +99,9 @@ interface VaccineRecordDao {
     @Update
     suspend fun updateRecord(record: VaccineRecordEntity)
 
+    @Query("SELECT * FROM vaccine_records WHERE id = :id LIMIT 1")
+    suspend fun getRecordById(id: String): VaccineRecordEntity?
+
     @Query("SELECT * FROM vaccine_records WHERE childId = :childId ORDER BY scheduledDateMillis ASC")
     fun getRecordsByChild(childId: String): Flow<List<VaccineRecordEntity>>
 

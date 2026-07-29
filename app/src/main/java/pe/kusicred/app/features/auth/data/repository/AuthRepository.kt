@@ -2,16 +2,18 @@ package pe.kusicred.app.features.auth.data.repository
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.tasks.await
 import pe.kusicred.app.core.database.dao.AppPreferenceDao
 import pe.kusicred.app.core.database.entity.AppPreferenceEntity
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.google.firebase.auth.FirebaseAuth
 
 @Singleton
 class AuthRepository @Inject constructor(
-    private val prefDao: AppPreferenceDao
+    private val prefDao: AppPreferenceDao,
+    private val firebaseAuth: FirebaseAuth
 ) {
-    private val firebaseAuth = com.google.firebase.auth.FirebaseAuth.getInstance()
 
     suspend fun isUserRegistered(): Boolean = withContext(Dispatchers.IO) {
         prefDao.getValue("auth_email") != null || firebaseAuth.currentUser != null
@@ -24,7 +26,7 @@ class AuthRepository @Inject constructor(
 
     suspend fun registerUser(name: String, email: String, password: String): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val result = kotlinx.coroutines.tasks.await(firebaseAuth.createUserWithEmailAndPassword(email.trim(), password))
+            val result = firebaseAuth.createUserWithEmailAndPassword(email.trim(), password).await()
             val user = result.user
             if (user != null) {
                 prefDao.upsert(AppPreferenceEntity("auth_name", name))
@@ -42,7 +44,7 @@ class AuthRepository @Inject constructor(
 
     suspend fun login(email: String, password: String): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val result = kotlinx.coroutines.tasks.await(firebaseAuth.signInWithEmailAndPassword(email.trim(), password))
+            val result = firebaseAuth.signInWithEmailAndPassword(email.trim(), password).await()
             if (result.user != null) {
                 prefDao.upsert(AppPreferenceEntity("auth_email", email.trim().lowercase()))
                 prefDao.upsert(AppPreferenceEntity("auth_is_guest_mode", "false"))

@@ -112,8 +112,7 @@ class VaccineRepository @Inject constructor(
 
     suspend fun markVaccineApplied(recordId: String, appliedDate: LocalDate) {
         val millis = appliedDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        // fetch + update
-        recordDao.getVaccinesInRange("", 0, Long.MAX_VALUE).find { it.id == recordId }?.let { record ->
+        recordDao.getRecordById(recordId)?.let { record ->
             recordDao.updateRecord(record.copy(
                 appliedDateMillis = millis,
                 status = "APPLIED"
@@ -123,7 +122,7 @@ class VaccineRepository @Inject constructor(
 
     suspend fun rescheduleVaccine(recordId: String, newDate: LocalDate, childId: String) {
         val millis = newDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        recordDao.getVaccinesInRange(childId, 0, Long.MAX_VALUE).find { it.id == recordId }?.let { record ->
+        recordDao.getRecordById(recordId)?.let { record ->
             recordDao.updateRecord(record.copy(
                 rescheduledDateMillis = millis,
                 scheduledDateMillis = millis,

@@ -7,11 +7,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import pe.kusicred.app.features.auth.data.repository.AuthRepository
+import pe.kusicred.app.core.notifications.KusiNotificationService
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val notificationService: KusiNotificationService
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
@@ -69,6 +71,7 @@ class AuthViewModel @Inject constructor(
             val result = authRepository.registerUser(name, email, pass)
             if (result.isSuccess) {
                 _uiState.value = AuthUiState.Success
+                notificationService.showWelcomeNotification()
                 onSuccess()
             } else {
                 _uiState.value = AuthUiState.Error(result.exceptionOrNull()?.message ?: "Error al registrar")
